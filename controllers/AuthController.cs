@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Text;
 using TapeDex.Models;
 using TapeDex.Data;
+using TapeDex.Models.DTOs;
 
 namespace TapeDex.Controllers;
 
@@ -92,7 +93,7 @@ public class AuthController : ControllerBase
         }
     }
 
-    [HttpGet("Me")]
+    [HttpGet("me")]
     [Authorize]
     public IActionResult Me()
     {
@@ -101,9 +102,20 @@ public class AuthController : ControllerBase
         var roles = User.FindAll(ClaimTypes.Role).Select(r => r.Value).ToList();
         if (profile != null)
         {
-            profile.UserName = User.FindFirstValue(ClaimTypes.Name);
-            profile.Email = User.FindFirstValue(ClaimTypes.Email);
-            profile.Roles = roles;
+            var userDTO = new UserProfileDTO
+            {
+            //    profile.UserName = User.FindFirstValue(ClaimTypes.Name);
+            // profile.Email = User.FindFirstValue(ClaimTypes.Email);
+            // profile.Roles = roles;
+            Id = profile.Id,
+            FirstName = profile.FirstName,
+            LastName = profile.LastName,
+            IdentityUserId = identityUserId,
+            Email = User.FindFirstValue(ClaimTypes.Email),
+            UserName = User.FindFirstValue(ClaimTypes.Name),
+            Roles = roles
+            };
+           
             return Ok(profile);
         }
         return NotFound();
