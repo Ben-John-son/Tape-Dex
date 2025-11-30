@@ -19,15 +19,19 @@ const toggleNavbar = () => setOpen(!open);
 
 return (
     <div>
-    <Navbar color="light" light fixed="true" expand="lg">
-        <NavbarBrand className="mr-auto" tag={RRNavLink} to="/">
-        🧹🧼House Rules
-        </NavbarBrand>
+    <Navbar id="navbar" color="light" light fixed="true" expand="lg">
+        
         {loggedInUser ? (
         <>
             <NavbarToggler onClick={toggleNavbar} />
             <Collapse isOpen={open} navbar>
-            <Nav navbar></Nav>
+            <Nav navbar>
+                 <NavItem onClick={() => setOpen(false)}>
+                  <NavLink id="navTapes" tag={RRNavLink} to="/tapes">
+                   Tapes
+                  </NavLink>
+                </NavItem>
+            </Nav>
             </Collapse>
             <Button
             color="primary"
@@ -46,10 +50,11 @@ return (
         ) : (
         <Nav navbar>
             <NavItem>
-            <NavLink tag={RRNavLink} to="/login">
+            {/* <NavLink tag={RRNavLink} to="/login">
                 <Button color="primary">Login</Button>
-            </NavLink>
+            </NavLink> */}
             </NavItem>
+           
         </Nav>
         )}
     </Navbar>
