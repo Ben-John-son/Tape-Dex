@@ -152,7 +152,7 @@ NavItem {
 }
 
 .containerHome {
-  flex: 1; /* fill remaining vertical space */
+  flex: 1; 
  background-image: url('/images/home.png'); 
  background-size: cover;
   padding: 1rem;
