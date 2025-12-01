@@ -4,6 +4,7 @@ import { AuthorizedRoute } from "./auth/AuthorizedRoute";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
 import Tapes from "./tapes/Tapes";
+import Home from "./Home";
 
 
 export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
@@ -12,6 +13,22 @@ export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
       <Route path="/">
          <Route
           index
+          element={
+            <AuthorizedRoute loggedInUser={loggedInUser}>
+              <Tapes />
+            </AuthorizedRoute>
+          }
+        />
+          <Route
+          path="home"
+          element={
+            <AuthorizedRoute loggedInUser={loggedInUser}>
+              <Home />
+            </AuthorizedRoute>
+          }
+        />
+         <Route
+          path="tapes"
           element={
             <AuthorizedRoute loggedInUser={loggedInUser}>
               <Tapes />

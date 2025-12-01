@@ -125,11 +125,12 @@ body {
 #navbar {
   width: 100%;
   background-color: black !important;
+  border: 1px solid grey;
 
 }
 
 NavLink {
-  color: white !important;
+  color: rgb(164, 76, 164) !important;
 }
 
 NavItem {
@@ -154,7 +155,8 @@ NavItem:hover  {
 }
 
 #navTapes {
-  color: rgb(179, 169, 169);
+  color: rgb(164, 76, 164) !important;
+ 
 }
 
 .containerHome {
@@ -165,6 +167,17 @@ NavItem:hover  {
   box-sizing: border-box; 
   width: 100%;
 }
+
+.containerTapes {
+  flex: 1; 
+  background-image: url('/images/Tapes.png'); 
+  background-size: cover;
+  background-position: center; 
+  padding: 15rem 1rem 1rem 1rem; 
+  box-sizing: border-box; 
+  width: 100%;
+}
+
 
 
 h1 {
@@ -191,4 +204,21 @@ h1 {
 .welcome {
   margin-top: 50px;
   color: rgb(185, 166, 166);
+}
+
+
+.tapesDisplayed {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+ justify-items: center;
+  /* margin-top: 20%; */
+ 
+  gap: 30px;
+
+}
+
+.cardImage {
+  height: 40vh !important;
+   
 }

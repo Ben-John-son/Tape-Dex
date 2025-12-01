@@ -26,6 +26,11 @@ return (
             <NavbarToggler onClick={toggleNavbar} />
             <Collapse isOpen={open} navbar>
             <Nav navbar>
+                <NavItem onClick={() => setOpen(false)}>
+                  <NavLink id="navTapes" tag={RRNavLink} to="/home">
+                   Home
+                  </NavLink>
+                </NavItem>
                  <NavItem onClick={() => setOpen(false)}>
                   <NavLink id="navTapes" tag={RRNavLink} to="/tapes">
                    Tapes
@@ -50,9 +55,7 @@ return (
         ) : (
         <Nav navbar>
             <NavItem>
-            {/* <NavLink tag={RRNavLink} to="/login">
-                <Button color="primary">Login</Button>
-            </NavLink> */}
+           
             </NavItem>
            
         </Nav>
@@ -61,3 +64,4 @@ return (
     </div>
 );
 }
+
