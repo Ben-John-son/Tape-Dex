@@ -68,7 +68,47 @@ public IActionResult Get()
     }).ToList());
   }
 
+  [HttpPatch("{id}")]
+  // [Authorize]
+  public IActionResult UpdateTape(TapeDTO tape, int id)
+  {
+    
+    Tape tapeToUpdate = _dbContext.tapes.Include(g => g.TapeGenres).SingleOrDefault(t => t.Id == id);
 
+    if (tapeToUpdate == null)
+    {
+      return NotFound();
+    }
+     else if (id != tape.Id)
+    {
+      return BadRequest();
+    }
+
+    tapeToUpdate.Title = tape.Title;
+    tapeToUpdate.Description = tape.Description;
+    if (tape.Year.HasValue)
+    tapeToUpdate.Year = tape.Year.Value;
+    if (tape.StudioId.HasValue)
+    tapeToUpdate.StudioId = tape.StudioId.Value;
+    tapeToUpdate.Photo = tape.Photo;
+    if (tape.TapeGenres != null)
+    {
+        tapeToUpdate.TapeGenres = tape.TapeGenres
+            .Select(tg => new TapeGenre {
+                Id = tg.Id,
+                TapeId = id,
+                GenreId = tg.GenreId,
+                Genre = new Genre
+                {
+                  Name = tg.Genre.Name
+                }
+            })
+            .ToList();
+    }
+
+    _dbContext.SaveChanges();
+    return NoContent();
+  }
 
 
 }
