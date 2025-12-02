@@ -36,6 +36,11 @@ return (
                    Tapes
                   </NavLink>
                 </NavItem>
+                <NavItem onClick={() => setOpen(false)}>
+                  <NavLink id="navTapes" tag={RRNavLink} to="/tapes">
+                   My Collection
+                  </NavLink>
+                </NavItem>
             </Nav>
             </Collapse>
             <Button
@@ -64,4 +69,3 @@ return (
     </div>
 );
 }
-
