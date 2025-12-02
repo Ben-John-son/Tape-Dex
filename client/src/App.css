@@ -130,7 +130,7 @@ body {
 }
 
 NavLink {
-  color: rgb(164, 76, 164) !important;
+  color: rgb(210, 182, 210) !important;
 }
 
 NavItem {
@@ -155,8 +155,11 @@ NavItem:hover  {
 }
 
 #navTapes {
-  color: rgb(164, 76, 164) !important;
- 
+  color: rgb(204, 65, 204) !important;
+  font-family: "Orbitron", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: bold;
+  font-style: normal;
 }
 
 .containerHome {
