@@ -162,6 +162,10 @@ NavItem:hover  {
   font-style: normal;
 }
 
+#navTapes:hover {
+ color: rgb(224, 138, 224) !important;
+}
+
 .containerHome {
   flex: 1; 
  background-image: url('/images/home.png'); 
@@ -221,7 +225,75 @@ h1 {
 
 }
 
+.myTapesDisplayed {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+ justify-items: center;
+  gap: 30px;
+  padding: 3px;
+}
+
 .cardImage {
   height: 40vh !important;
    
+}
+
+.formPageContainer {
+  flex: 1;
+  align-items: center;
+  align-content: center;
+ background-image: url('/images/tdFormPage2.png'); 
+  background-size: cover;
+  background-position: center;
+}
+
+Input {
+  width: 50% !important;
+  margin-left: 8% !important;
+}
+
+#navSearch {
+  width: 20% !important;
+  margin-right: 2%;
+ 
+}
+
+
+.containerBtns {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-top: 10%;
+  margin-right: 5%;
+}
+
+.containerMyTapes {
+  flex: 1;
+  background-image: url('/images/myTapesImg.png');
+  background-size: cover;
+  background-position: center; 
+  padding: 2rem 1rem 1rem 1rem; 
+  box-sizing: border-box; 
+  width: 100%;
+}
+
+.myTapesHeader {
+  color: white;
+  font-family: "Orbitron", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: bold;
+  font-style: normal;
+  text-align: center;
+  margin-top: 0 !important;
+  padding: 0 !important;
+  margin-bottom: 9%;
+}
+
+.newTapeBtn {
+display: flex;
+flex-direction: column;
+align-items: center;
+align-content: center;
+margin-left: 50%;
 }

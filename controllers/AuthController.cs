@@ -93,7 +93,7 @@ public class AuthController : ControllerBase
         }
     }
 
-    [HttpGet("me")]
+    [HttpGet("Me")]
     [Authorize]
     public IActionResult Me()
     {
@@ -116,7 +116,7 @@ public class AuthController : ControllerBase
             Roles = roles
             };
            
-            return Ok(profile);
+            return Ok(userDTO);
         }
         return NotFound();
     }

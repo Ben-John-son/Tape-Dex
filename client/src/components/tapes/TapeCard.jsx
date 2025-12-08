@@ -1,54 +1,4 @@
-// import React, { useState } from 'react';
-// import {
-//   Card,
-//   CardBody,
-//   CardImg,
-//   CardTitle,
-//   CardText,
-//   Button, Col, Row, Toast
-// } from "reactstrap";
-
-
-
-
-
-
-
-// export default function TapeCard({ tapeObj }) {
-
-//   const [showA, setShowA] = useState(true);
-  
-//     const toggleShowA = () => setShowA(!showA);
-
-//   return (
-//     <Card style={{ width: "18rem" }}>
-//       <CardImg className="cardImage" top src={tapeObj.photo} />
-//       <CardBody>
-//         <CardTitle tag="h5">{tapeObj.title}</CardTitle>
-//         <CardText>{tapeObj.description}</CardText>
-//         <Button color="primary" onClick={toggleShowA}>Go somewhere</Button>
-//         <Row>
-//               <Col md={6} className="mb-2">
-//                 <Button onClick={toggleShowA} className="mb-2">
-//                   About <strong>this</strong> tape
-//                 </Button>
-//                 <Toast show={showA} onClose={toggleShowA}>
-//                   <Toast.Header>
-//                   </Toast.Header>
-//                   <Toast.Body>{tapeObj.description}</Toast.Body>
-                 
-//                   <Toast.Body>Released on VHS: {tapeObj.year}</Toast.Body>
-//                 </Toast>
-//               </Col>
-//             </Row>
-//       </CardBody>
-//     </Card>
-//   );
-// }
-
-
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardBody,
@@ -58,11 +8,60 @@ import {
   Button,
   Col,
   Row,
-  Collapse
+  Collapse,
 } from "reactstrap";
+import { Modal } from "react-bootstrap";
+import getGenres from "../../managers/genreManager";
+import Select from "react-select";
+import { updateTape } from "../../managers/tapeManager";
+import { useNavigate } from "react-router-dom";
 
-export default function TapeCard({ tapeObj }) {
+export default function TapeCard({ tapeObj, tapeUser }) {
   const [showDetails, setShowDetails] = useState(false);
+  const [show, setShow] = useState(false);
+  const [genres, setGenres] = useState([]);
+  const [formData, setFormData] = useState({
+    id: tapeObj.id,
+    title: tapeObj.title || "",
+    description: tapeObj.description || "",
+    userId: tapeObj.userId || 0,
+    photo: tapeObj.photo || "",
+    studioId: tapeObj.studioId || 0,
+    genreIds: tapeObj.tapeGenres
+      ? tapeObj.tapeGenres.map((tg) => tg.genreId)
+      : [],
+  });
+    
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    getGenres().then(setGenres);
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+const handleSubmit = (e) => {
+  e.preventDefault();
+
+  const payload = {
+    ...formData,
+    tapeGenres: formData.genreIds.map(id => ({ genreId: id }))
+  };
+
+  updateTape(tapeObj.id, payload).then(() => {
+    navigate("/tapes");
+    handleClose();
+  });
+};
+
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const toggleDetails = () => setShowDetails(!showDetails);
 
@@ -78,17 +77,111 @@ export default function TapeCard({ tapeObj }) {
             </Button>
 
             <Collapse isOpen={showDetails}>
-              <div className="mt-2 p-2 border rounded" style={{ backgroundColor: "#1a1a1a", color: "white" }}>
+              <div
+                className="mt-2 p-2 border rounded"
+                style={{ backgroundColor: "#1a1a1a", color: "white" }}
+              >
                 <p>{tapeObj.description}</p>
                 <p>Released on VHS: {tapeObj.year}</p>
-                {tapeObj.tapeGenres.map((o) =>
-                (
-                  <p>Genre: {o.genre.name}</p>
-                ))}
+                <section>
+                  <strong>
+                    {tapeObj.tapeGenres.length === 1 ? "Genre" : "Genres"}:
+                  </strong>
+                  {tapeObj.tapeGenres.map((tg) => (
+                    <p key={tg.id}>{tg.genre.name}</p>
+                  ))}
+                  <strong> Studio: {tapeObj.studio.name}</strong>
+                </section>
               </div>
+              {tapeUser && tapeUser.id === tapeObj.userId && (
+                <>
+                  <Button onClick={handleShow}>Edit</Button>
+                  <Button>Delete</Button>
+                </>
+              )}
             </Collapse>
           </Col>
         </Row>
+        <Modal
+          show={show}
+          onHide={handleClose}
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>{tapeObj.title}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label className="form-label">Title</label>
+                <input
+                  type="text"
+                  name="title"
+                  className="form-control"
+                  value={formData.title}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Description</label>
+                <textarea
+                  name="description"
+                  className="form-control"
+                  value={formData.description}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Cover Photo URL</label>
+                <input
+                  type="text"
+                  name="photo"
+                  className="form-control"
+                  value={formData.photo}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Studio</label>
+                <input
+                  type="number"
+                  name="studioId"
+                  className="form-control"
+                  value={formData.studioId}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Genres</label>
+                <Select
+                  isMulti
+                  value={genres
+                    .filter((g) => formData.genreIds.includes(g.id))
+                    .map((g) => ({ value: g.id, label: g.name }))}
+                  options={genres.map((g) => ({ value: g.id, label: g.name }))}
+                  onChange={(selected) =>
+                    setFormData({
+                      ...formData,
+                      genreIds: selected.map((s) => s.value),
+                    })
+                  }
+                />
+              </div>
+              <Button type="submit">Submit</Button>
+            </form>
+          </Modal.Body>
+          <Modal.Body></Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </CardBody>
     </Card>
   );

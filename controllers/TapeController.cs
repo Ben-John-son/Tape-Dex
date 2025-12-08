@@ -68,6 +68,58 @@ public IActionResult Get()
     }).ToList());
   }
 
+
+    [HttpGet("tapeBy/{id}")]
+    // [Authorize]
+    public IActionResult GetTapeById( int id)
+  {
+       return Ok(_dbContext.tapes.Include(t => t.Studio).Include(tu => tu.User).Include(tg => tg.TapeGenres).Select(tape => new TapeDTO
+    {
+      Id = tape.Id,
+      Title = tape.Title,
+      Description = tape.Description,
+      Year = tape.Year,
+      UserId = tape.UserId,
+      User = new UserProfileDTO
+      {
+        Id = tape.User.Id,
+        FirstName = tape.User.FirstName,
+        LastName = tape.User.LastName
+      },
+      StudioId = tape.StudioId,
+      Studio = new StudioDTO
+      {
+        Id = tape.Studio.Id,
+        Name = tape.Studio.Name,
+        Country = tape.Studio.Country
+      },
+      Photo = tape.Photo,
+      Rating = tape.Rating,
+     TapeGenres = tape.TapeGenres
+    .Select(tg => new TapeGenreDTO
+    {
+        Id = tg.Id,
+        GenreId = tg.GenreId,
+        TapeId = tg.TapeId,
+        Genre = new GenreDTO
+        {
+          Id = tg.Genre.Id,
+          Name = tg.Genre.Name
+        }
+    }).Where(ft => ft.TapeId == tape.Id)
+    .ToList(),
+
+
+
+
+    }).FirstOrDefault(t => t.Id == id));
+
+
+
+  }
+
+
+
   [HttpPatch("{id}")]
   // [Authorize]
   public IActionResult UpdateTape(TapeDTO tape, int id)
@@ -91,24 +143,84 @@ public IActionResult Get()
     if (tape.StudioId.HasValue)
     tapeToUpdate.StudioId = tape.StudioId.Value;
     tapeToUpdate.Photo = tape.Photo;
-    if (tape.TapeGenres != null)
+
+if (tape.TapeGenres != null)
+{
+   
+    var existing = _dbContext.tapeGenres.Where(tg => tg.TapeId == id);
+    _dbContext.tapeGenres.RemoveRange(existing);
+
+    foreach (var tg in tape.TapeGenres)
     {
-        tapeToUpdate.TapeGenres = tape.TapeGenres
-            .Select(tg => new TapeGenre {
-                Id = tg.Id,
-                TapeId = id,
-                GenreId = tg.GenreId,
-                Genre = new Genre
-                {
-                  Name = tg.Genre.Name
-                }
-            })
-            .ToList();
+        _dbContext.tapeGenres.Add(new TapeGenre
+        {
+            TapeId = id,
+            GenreId = tg.GenreId
+        });
     }
+}
 
     _dbContext.SaveChanges();
     return NoContent();
   }
 
+
+  [HttpPost]
+  // [Authorize]
+  public IActionResult NewTape(Tape tape)
+  {
+    _dbContext.tapes.Add(tape);
+    _dbContext.SaveChanges();
+
+    return Created($"/api/Tape/{tape.Id}", tape);
+  }
+
+  [HttpGet("{id}")]
+  [Authorize]
+  public IActionResult GetUserTapes(int id)
+  {
+    
+      return Ok(_dbContext.tapes.Include(t => t.Studio).Include(tu => tu.User).Include(tg => tg.TapeGenres).Select(tape => new TapeDTO
+    {
+      Id = tape.Id,
+      Title = tape.Title,
+      Description = tape.Description,
+      Year = tape.Year,
+      UserId = tape.UserId,
+      User = new UserProfileDTO
+      {
+        Id = tape.User.Id,
+        FirstName = tape.User.FirstName,
+        LastName = tape.User.LastName
+      },
+      StudioId = tape.StudioId,
+      Studio = new StudioDTO
+      {
+        Id = tape.Studio.Id,
+        Name = tape.Studio.Name,
+        Country = tape.Studio.Country
+      },
+      Photo = tape.Photo,
+      Rating = tape.Rating,
+     TapeGenres = tape.TapeGenres
+    .Select(tg => new TapeGenreDTO
+    {
+        Id = tg.Id,
+        GenreId = tg.GenreId,
+        TapeId = tg.TapeId,
+        Genre = new GenreDTO
+        {
+          Id = tg.Genre.Id,
+          Name = tg.Genre.Name
+        }
+    }).Where(ft => ft.TapeId == tape.Id)
+    .ToList(),
+
+
+
+
+    }).Where(dbTapes => dbTapes.UserId == id).ToList());
+
+  }
 
 }

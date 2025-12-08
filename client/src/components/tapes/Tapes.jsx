@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { getTapes } from "../../managers/tapeManager";
 import TapeCard from "./TapeCard";
 import getGenres from "../../managers/genreManager";
-
+import { tryGetLoggedInUser } from "../../managers/authManager";
 const years = [];
 for (let year = 1976; year <= 2007; year++) {
   years.push(year);
@@ -14,19 +14,28 @@ export default function Tapes() {
   const [selectedGenre, setSelectedGenre] = useState("");
   const [filteredTapes, setFilteredTapes] = useState([]);
   const [selectedYear, setSelectedYear] = useState();
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     getTapes().then((data) => {
       setTapes(data);
       setFilteredTapes(data); 
     });
-  }, []);
+  }, [tapes]);
 
   useEffect(() => {
     getGenres().then(setGenres);
   }, []);
 
-  
+  useEffect(() =>
+    {
+      tryGetLoggedInUser().then((u) =>
+      
+      setUser(u)
+      )
+    }, [])
+
+
   const handleGenreChange = (e) => {
     const value = e.target.value;
     setSelectedGenre(value);
@@ -62,8 +71,9 @@ export default function Tapes() {
   return (
     <div className="containerTapes">
       <div className="tapesDisplayed">
-        {filteredTapes.map((tape) => (
-          <TapeCard tapeObj={tape} key={`tape-${tape.id}`} />
+        {filteredTapes.slice().sort((a, b) => a.title.localeCompare(b.title))
+        .map((tape) => (
+          <TapeCard tapeObj={tape} key={`tape-${tape.id}`} tapeUser={user} />
         ))}
       </div>
 
