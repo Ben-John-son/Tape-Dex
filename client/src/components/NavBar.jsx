@@ -9,8 +9,11 @@ NavItem,
 Navbar,
 NavbarBrand,
 NavbarToggler,
+Input,
 } from "reactstrap";
 import { logout } from "../managers/authManager";
+import '/images/stripes.png'
+
 
 export default function NavBar({ loggedInUser, setLoggedInUser }) {
 const [open, setOpen] = useState(false);
@@ -37,12 +40,15 @@ return (
                   </NavLink>
                 </NavItem>
                 <NavItem onClick={() => setOpen(false)}>
-                  <NavLink id="navTapes" tag={RRNavLink} to="/tapes">
+                  <NavLink id="navTapes" tag={RRNavLink} to="/myTapes">
                    My Collection
                   </NavLink>
                 </NavItem>
             </Nav>
             </Collapse>
+            {/* <img id="stripedNav" src='/images/stripes.png' /> */}
+            <Input id="navSearch" placeholder="search tapes"></Input>
+            
             <Button
             color="primary"
             onClick={(e) => {

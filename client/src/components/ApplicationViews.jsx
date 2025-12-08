@@ -5,6 +5,8 @@ import Login from "./auth/Login";
 import Register from "./auth/Register";
 import Tapes from "./tapes/Tapes";
 import Home from "./Home";
+import FormPage from "./tapes/FormPage";
+import MyTapes from "./tapes/MyTapes";
 
 
 export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
@@ -32,6 +34,22 @@ export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
           element={
             <AuthorizedRoute loggedInUser={loggedInUser}>
               <Tapes />
+            </AuthorizedRoute>
+          }
+        />
+          <Route
+          path="form"
+          element={
+            <AuthorizedRoute loggedInUser={loggedInUser}>
+              <FormPage />
+            </AuthorizedRoute>
+          }
+        />
+         <Route
+          path="myTapes"
+          element={
+            <AuthorizedRoute loggedInUser={loggedInUser}>
+              <MyTapes />
             </AuthorizedRoute>
           }
         />
