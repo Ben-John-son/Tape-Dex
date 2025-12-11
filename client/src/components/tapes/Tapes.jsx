@@ -15,13 +15,14 @@ export default function Tapes() {
   const [filteredTapes, setFilteredTapes] = useState([]);
   const [selectedYear, setSelectedYear] = useState();
   const [user, setUser] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     getTapes().then((data) => {
       setTapes(data);
       setFilteredTapes(data); 
     });
-  }, [tapes]);
+  }, [refreshKey]);
 
   useEffect(() => {
     getGenres().then(setGenres);
@@ -73,7 +74,7 @@ export default function Tapes() {
       <div className="tapesDisplayed">
         {filteredTapes.slice().sort((a, b) => a.title.localeCompare(b.title))
         .map((tape) => (
-          <TapeCard tapeObj={tape} key={`tape-${tape.id}`} tapeUser={user} />
+          <TapeCard tapeObj={tape} key={`tape-${tape.id}`} tapeUser={user} onUpdate={() => setRefreshKey(prev => prev + 1)}/>
         ))}
       </div>
 

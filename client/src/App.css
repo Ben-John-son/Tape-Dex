@@ -297,3 +297,37 @@ align-items: center;
 align-content: center;
 margin-left: 50%;
 }
+
+#crt {
+  width: 260px;
+  height: 255px;
+  position: absolute;
+  left: 40%;
+  top: 55%;
+}
+
+#yT {
+   width: 183px;
+  height: 118px;
+  position: absolute;
+  left: 42.6%;
+  top: 60%;
+  border-radius: 8%;
+}
+
+#crtT {
+  width: 460px;
+  height: 455px;
+  position: absolute;
+  left: 5%;
+  top: 55%;
+}
+
+#ytT {
+    width: 325px;
+  height: 210px;
+  position: absolute;
+  left: 19.1%;
+  top: 235%;
+  border-radius: 8%;
+}

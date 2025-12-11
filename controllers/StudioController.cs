@@ -69,7 +69,47 @@ public IActionResult CreateStudio(Studio studio)
   }
 
 
+  [HttpPatch("{id}")]
+  // [Authorize]
+  public IActionResult UpdateStudio(StudioDTO studio, int id)
+  {
+
+      Studio updatedStudio = _dbContext.studios.Include(s => s.Tapes).SingleOrDefault(st => st.Id == id);
+
+      
+    if (updatedStudio == null)
+    {
+      return NotFound();
+    }
+     else if (id != studio.Id)
+    {
+      return BadRequest();
+    }
+
+    updatedStudio.Name = studio.Name;
+    updatedStudio.Country = studio.Country;
+    _dbContext.SaveChanges();
+    return NoContent();
+
+
+  }
+
+
+
+[HttpDelete("{id}")]
+// [Authorize]
+public IActionResult DeleteStudio(int id)
+  {
+    var removedStudio = _dbContext.studios.SingleOrDefault(s => s.Id == id);
+    if (removedStudio == null)
+    {
+      return BadRequest();
+    }
+    _dbContext.studios.Remove(removedStudio);
+    _dbContext.SaveChanges();
+    return NoContent();
+
+  }
 
 
 }
-

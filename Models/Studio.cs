@@ -8,5 +8,5 @@ public class Studio
 
   public string Country {get; set;}
 
-  public List<Tape> Tapes {get; set;}
+  public List<Tape>? Tapes {get; set;}
 }
