@@ -169,6 +169,9 @@ if (tape.TapeGenres != null)
   // [Authorize]
   public IActionResult NewTape(Tape tape)
   {
+    if (tape.Rating.HasValue)
+      tape.Rating = tape.Rating.Value;
+    
     _dbContext.tapes.Add(tape);
     _dbContext.SaveChanges();
 
@@ -221,6 +224,20 @@ if (tape.TapeGenres != null)
 
     }).Where(dbTapes => dbTapes.UserId == id).ToList());
 
+  }
+
+[HttpDelete("{id}")]
+// [Authorize]
+public IActionResult DeleteTape(int id)
+  {
+    var removedTape = _dbContext.tapes.SingleOrDefault(t => t.Id == id);
+    if (removedTape == null)
+    {
+      return BadRequest();
+    }
+    _dbContext.tapes.Remove(removedTape);
+    _dbContext.SaveChanges();
+    return NoContent();
   }
 
 }

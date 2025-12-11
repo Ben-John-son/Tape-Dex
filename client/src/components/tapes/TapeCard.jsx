@@ -9,6 +9,7 @@ import {
   Col,
   Row,
   Collapse,
+  ModalBody,
 } from "reactstrap";
 import { Modal } from "react-bootstrap";
 import getGenres from "../../managers/genreManager";
@@ -16,9 +17,10 @@ import Select from "react-select";
 import { updateTape } from "../../managers/tapeManager";
 import { useNavigate } from "react-router-dom";
 
-export default function TapeCard({ tapeObj, tapeUser }) {
+export default function TapeCard({ tapeObj, tapeUser, onUpdate }) {
   const [showDetails, setShowDetails] = useState(false);
   const [show, setShow] = useState(false);
+  const [showTv, setShowTv] = useState(false)
   const [genres, setGenres] = useState([]);
   const [formData, setFormData] = useState({
     id: tapeObj.id,
@@ -31,7 +33,7 @@ export default function TapeCard({ tapeObj, tapeUser }) {
       ? tapeObj.tapeGenres.map((tg) => tg.genreId)
       : [],
   });
-    
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,23 +47,25 @@ export default function TapeCard({ tapeObj, tapeUser }) {
       [name]: value,
     });
   };
-const handleSubmit = (e) => {
-  e.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-  const payload = {
-    ...formData,
-    tapeGenres: formData.genreIds.map(id => ({ genreId: id }))
+    const payload = {
+      ...formData,
+      tapeGenres: formData.genreIds.map((id) => ({ genreId: id })),
+    };
+
+    updateTape(tapeObj.id, payload).then(() => {
+      navigate("/tapes");
+      onUpdate();
+      handleClose();
+    });
   };
-
-  updateTape(tapeObj.id, payload).then(() => {
-    navigate("/tapes");
-    handleClose();
-  });
-};
-
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const handleCloseTv = () => setShowTv(false);
+  const handleShowTv = () => setShowTv(true);
 
   const toggleDetails = () => setShowDetails(!showDetails);
 
@@ -182,6 +186,33 @@ const handleSubmit = (e) => {
             </Button>
           </Modal.Footer>
         </Modal>
+        <Button onClick={handleShowTv}>Video</Button>
+        <Modal
+          show={showTv}
+          onHide={handleClose}
+          backdrop="static"
+          keyboard={false}
+        >
+          
+            <img id="crtT" src="/images/crtMain.png"></img>
+
+            <iframe
+              id="ytT"
+              src="https://www.youtube.com/embed/aCWg50TKqb4?si=FcVKP6_0c9FCsRZr"
+              title="YouTube video player"
+              frameborder="0"
+              allow=" autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+            ></iframe>
+        
+         
+            <Button variant="secondary" onClick={handleCloseTv}>
+              Close
+            </Button>
+         
+        </Modal>
+         
       </CardBody>
     </Card>
   );
