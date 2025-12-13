@@ -22,7 +22,7 @@ public StudioController(TapeDexDbContext context)
   }
 
 [HttpGet]
-// [Authorize]
+[Authorize]
 
 public IActionResult Get()
   {
@@ -59,7 +59,7 @@ public IActionResult Get()
 
 
 [HttpPost]
-// [Authorize]
+[Authorize]
 public IActionResult CreateStudio(Studio studio)
   {
     
@@ -71,7 +71,7 @@ public IActionResult CreateStudio(Studio studio)
 
 
   [HttpPatch("{id}")]
-  // [Authorize]
+  [Authorize]
   public IActionResult UpdateStudio(StudioDTO studio, int id)
   {
 
@@ -98,7 +98,7 @@ public IActionResult CreateStudio(Studio studio)
 
 
 [HttpDelete("{id}")]
-// [Authorize]
+[Authorize]
 public IActionResult DeleteStudio(int id)
   {
     var removedStudio = _dbContext.studios.SingleOrDefault(s => s.Id == id);
@@ -134,7 +134,7 @@ public IActionResult GetUserStudios(int id)
 
 
 [HttpGet("{id}")]
-// [Authorize]
+[Authorize]
 public IActionResult StudioById(int id)
 {
     var studio = _dbContext.studios

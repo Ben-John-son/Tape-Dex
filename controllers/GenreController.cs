@@ -22,7 +22,7 @@ public GenreController(TapeDexDbContext context)
   }
 
 [HttpGet]
-// [Authorize]
+[Authorize]
 
 public IActionResult Get()
   {
@@ -56,7 +56,7 @@ public IActionResult Get()
   }
 
   [HttpPatch("{id}")]
-  // [Authorize]
+  [Authorize]
   public IActionResult UpdateGenre(GenreDTO genre, int id)
   {
     
@@ -79,7 +79,7 @@ public IActionResult Get()
 
 
 [HttpPost]
-// [Authorize]
+[Authorize]
 public IActionResult CreateGenre(Genre genre)
   {
     
