@@ -4,24 +4,25 @@ import {
   CardBody,
   CardImg,
   CardTitle,
-  CardText,
   Button,
   Col,
   Row,
   Collapse,
-  ModalBody,
 } from "reactstrap";
 import { Modal } from "react-bootstrap";
-import getGenres from "../../managers/genreManager";
 import Select from "react-select";
-import { updateTape } from "../../managers/tapeManager";
-import { useNavigate } from "react-router-dom";
+
+import getGenres from "../../managers/genreManager";
+import { deleteTape, updateTape } from "../../managers/tapeManager";
+import { getStudios } from "../../managers/studioManager";
 
 export default function TapeCard({ tapeObj, tapeUser, onUpdate }) {
   const [showDetails, setShowDetails] = useState(false);
-  const [show, setShow] = useState(false);
-  const [showTv, setShowTv] = useState(false)
+  const [showEdit, setShowEdit] = useState(false);
+  const [showTv, setShowTv] = useState(false);
   const [genres, setGenres] = useState([]);
+  const [studios, setStudios] = useState([]);
+
   const [formData, setFormData] = useState({
     id: tapeObj.id,
     title: tapeObj.title || "",
@@ -34,20 +35,24 @@ export default function TapeCard({ tapeObj, tapeUser, onUpdate }) {
       : [],
   });
 
-  const navigate = useNavigate();
-
   useEffect(() => {
     getGenres().then(setGenres);
   }, []);
 
+  useEffect(() => {
+    getStudios().then(setStudios);
+  }, []);
+  const toggleDetails = () => setShowDetails((prev) => !prev);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const payload = {
@@ -55,25 +60,40 @@ export default function TapeCard({ tapeObj, tapeUser, onUpdate }) {
       tapeGenres: formData.genreIds.map((id) => ({ genreId: id })),
     };
 
-    updateTape(tapeObj.id, payload).then(() => {
-      navigate("/tapes");
-      onUpdate();
-      handleClose();
-    });
+    try {
+      const updatedTape = await updateTape(tapeObj.id, payload);
+      if (onUpdate) onUpdate(updatedTape);
+      setShowEdit(false);
+    } catch (error) {
+      console.error("Failed to update tape:", error);
+      alert("Failed to update tape. See console for details.");
+    }
   };
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-  const handleCloseTv = () => setShowTv(false);
-  const handleShowTv = () => setShowTv(true);
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this tape?")) return;
 
-  const toggleDetails = () => setShowDetails(!showDetails);
+    try {
+      await deleteTape(tapeObj.id);
+      if (onUpdate) onUpdate(tapeObj.id);
+    } catch (error) {
+      console.error("Failed to delete tape:", error);
+      alert("Failed to delete tape. See console for details.");
+    }
+  };
 
   return (
     <Card style={{ width: "18rem" }}>
-      <CardImg className="cardImage" top src={tapeObj.photo} />
+      <CardImg
+        className="cardImage"
+        top
+        src={tapeObj.photo}
+        alt={tapeObj.title}
+      />
+
       <CardBody>
         <CardTitle tag="h5">{tapeObj.title}</CardTitle>
+
         <Row>
           <Col md={12} className="mb-2">
             <Button color="primary" onClick={toggleDetails}>
@@ -87,6 +107,7 @@ export default function TapeCard({ tapeObj, tapeUser, onUpdate }) {
               >
                 <p>{tapeObj.description}</p>
                 <p>Released on VHS: {tapeObj.year}</p>
+
                 <section>
                   <strong>
                     {tapeObj.tapeGenres.length === 1 ? "Genre" : "Genres"}:
@@ -94,27 +115,40 @@ export default function TapeCard({ tapeObj, tapeUser, onUpdate }) {
                   {tapeObj.tapeGenres.map((tg) => (
                     <p key={tg.id}>{tg.genre.name}</p>
                   ))}
-                  <strong> Studio: {tapeObj.studio.name}</strong>
+
+                  <p>
+                    <strong>Studio:</strong> {tapeObj.studio.name}
+                  </p>
                 </section>
+
+                {tapeUser && tapeUser.id === tapeObj.userId && (
+                  <>
+                    <Button
+                      size="sm"
+                      className="me-2"
+                      onClick={() => setShowEdit(true)}
+                    >
+                      Edit
+                    </Button>
+                    <Button size="sm" color="danger" onClick={handleDelete}>
+                      Delete
+                    </Button>
+                  </>
+                )}
               </div>
-              {tapeUser && tapeUser.id === tapeObj.userId && (
-                <>
-                  <Button onClick={handleShow}>Edit</Button>
-                  <Button>Delete</Button>
-                </>
-              )}
             </Collapse>
           </Col>
         </Row>
+
         <Modal
-          show={show}
-          onHide={handleClose}
+          show={showEdit}
+          onHide={() => setShowEdit(false)}
           backdrop="static"
-          keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>{tapeObj.title}</Modal.Title>
+            <Modal.Title>Edit {tapeObj.title}</Modal.Title>
           </Modal.Header>
+
           <Modal.Body>
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
@@ -151,12 +185,24 @@ export default function TapeCard({ tapeObj, tapeUser, onUpdate }) {
 
               <div className="mb-3">
                 <label className="form-label">Studio</label>
-                <input
-                  type="number"
-                  name="studioId"
-                  className="form-control"
-                  value={formData.studioId}
-                  onChange={handleChange}
+
+                <Select
+                  value={
+                    studios
+                      .filter((s) => s.id === formData.studioId)
+                      .map((s) => ({ value: s.id, label: s.name }))[0] || null
+                  }
+                  options={studios.map((s) => ({
+                    value: s.id,
+                    label: s.name,
+                  }))}
+                  onChange={(selected) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      studioId: selected.value,
+                    }))
+                  }
+                  isClearable
                 />
               </div>
 
@@ -167,52 +213,44 @@ export default function TapeCard({ tapeObj, tapeUser, onUpdate }) {
                   value={genres
                     .filter((g) => formData.genreIds.includes(g.id))
                     .map((g) => ({ value: g.id, label: g.name }))}
-                  options={genres.map((g) => ({ value: g.id, label: g.name }))}
+                  options={genres.map((g) => ({
+                    value: g.id,
+                    label: g.name,
+                  }))}
                   onChange={(selected) =>
-                    setFormData({
-                      ...formData,
+                    setFormData((prev) => ({
+                      ...prev,
                       genreIds: selected.map((s) => s.value),
-                    })
+                    }))
                   }
                 />
               </div>
-              <Button type="submit">Submit</Button>
+
+              <Button type="submit">Save Changes</Button>
             </form>
           </Modal.Body>
-          <Modal.Body></Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose}>
-              Close
-            </Button>
-          </Modal.Footer>
         </Modal>
-        <Button onClick={handleShowTv}>Video</Button>
-        <Modal
-          show={showTv}
-          onHide={handleClose}
-          backdrop="static"
-          keyboard={false}
-        >
-          
-            <img id="crtT" src="/images/crtMain.png"></img>
 
-            <iframe
-              id="ytT"
-              src="https://www.youtube.com/embed/aCWg50TKqb4?si=FcVKP6_0c9FCsRZr"
-              title="YouTube video player"
-              frameborder="0"
-              allow=" autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen
-            ></iframe>
-        
-         
-            <Button variant="secondary" onClick={handleCloseTv}>
-              Close
-            </Button>
-         
+        <Button className="mt-2" onClick={() => setShowTv(true)}>
+          Video
+        </Button>
+
+        <Modal show={showTv} onHide={() => setShowTv(false)} backdrop="static">
+          <img id="crtT" src="/images/crtMain.png" alt="CRT TV" />
+
+          <iframe
+            id="ytT"
+            src="https://www.youtube.com/embed/aCWg50TKqb4?autoplay=1&mute=1&loop=1&playlist=aCWg50TKqb4"
+            title="YouTube video player"
+            frameBorder="0"
+            allow="autoplay; encrypted-media; picture-in-picture"
+            allowFullScreen
+          />
+
+          <Button variant="secondary" onClick={() => setShowTv(false)}>
+            Close
+          </Button>
         </Modal>
-         
       </CardBody>
     </Card>
   );
