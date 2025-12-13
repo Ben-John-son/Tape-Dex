@@ -1,23 +1,7 @@
 import { Form, FormGroup, Label, Input, Button} from "reactstrap";
 import Select from 'react-select';
-// import { getTapeById } from "../../managers/tapeManager";
-// import { useParams } from "react-router-dom";
-// import getGenres from "../../managers/genreManager";
-// import { useEffect } from "react";
-
-//NEED SOMETHING LIKE VALUE.LENGTH OR SOMETHING SIMILAR TO GET HOW MANY GENRES HAVE BEEN SELECTED, THAT WAY A FUNCTION CAN BE WRITTEN TO MAKE A NEW OBJECT EACH TIME A GENRE IS SELECTED. 
- 
 
 function TapeForm({ genreList }) {
-
-// const { id } = useParams();
-// const [genres, setGenres] = useState([]);
-// const isEditMode = !!id;
-
-
-
-
-
 
   return (
      <Form id="tapeForm">

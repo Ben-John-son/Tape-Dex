@@ -334,3 +334,21 @@ padding: 10px;
   top: 235%;
   border-radius: 8%;
 }
+
+.studioCardBody {
+  display: flex;
+  flex-direction: row;
+  align-items: center;   
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.studioTitle {
+  margin: 0;                 
+  flex: 1;                   
+}
+
+.studioActions {
+  display: flex;
+  gap: 0.5rem;
+}

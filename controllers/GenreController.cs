@@ -72,21 +72,6 @@ public IActionResult Get()
     }
 
     genreToUpdate.Name = genre.Name;
-   
-    // if (genre.TapeGenres != null)
-    // {
-    //    genreToUpdate.TapeGenres = genre.TapeGenres
-    //         .Select(tg => new TapeGenre {
-    //             Id = tg.Id,
-    //             TapeId = id,
-    //             GenreId = tg.GenreId,
-    //             Tape = new Tape
-    //             {
-    //               Title = tg.Tape.Title
-    //             }
-    //         })
-    //         .ToList();
-    // }
 
     _dbContext.SaveChanges();
     return NoContent();

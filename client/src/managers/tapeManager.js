@@ -1,26 +1,25 @@
 const url = "/api/tape";
 
-
-const safeJson = async (res) => {
-  if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(errorText || "Request failed");
-  }
-  if (res.status === 204) return null; 
-  return res.json();
+export const getTapes = () => {
+  return fetch(url).then((res) => {
+    if (!res.ok) throw new Error("Failed to fetch tapes");
+    return res.json();
+  });
 };
 
+export const getUserTapes = (id) => {
+  return fetch(`${url}/${id}`).then((res) => {
+    if (!res.ok) throw new Error("Failed to fetch user tapes");
+    return res.json();
+  });
+};
 
-export const getTapes = () =>
-   fetch(url).then(safeJson);
-
-
-export const getUserTapes = (id) => 
-  fetch(`${url}/${id}`).then(safeJson);
-
-
-export const getTapeById = (id) => 
-  fetch(`${url}/tapeBy/${id}`).then(safeJson);
+export const getTapeById = (id) => {
+  return fetch(`${url}/tapeBy/${id}`).then((res) => {
+    if (!res.ok) throw new Error("Failed to fetch tape");
+    return res.json();
+  });
+};
 
 export const updateTape = (id, tape) => {
   return fetch(`${url}/${id}`, {
@@ -28,9 +27,13 @@ export const updateTape = (id, tape) => {
     credentials: "same-origin",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(tape),
-  }).then(safeJson);
-};
+  }).then((res) => {
+    if (!res.ok) throw new Error("Failed to update tape");
+    if (res.status === 204) return null;
 
+    return res.json();
+  });
+};
 
 export const newTape = (tape) => {
   return fetch(url, {
@@ -38,10 +41,17 @@ export const newTape = (tape) => {
     credentials: "same-origin",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(tape),
-  }).then(safeJson);
+  }).then((res) => {
+    if (!res.ok) throw new Error("Failed to create tape");
+    return res.json();
+  });
 };
 
-
 export const deleteTape = (id) => {
-  return fetch(`${url}/${id}`, { method: "DELETE" }).then(safeJson);
+  return fetch(`${url}/${id}`, {
+    method: "DELETE",
+  }).then((res) => {
+    if (!res.ok) throw new Error("Failed to delete tape");
+    return null;
+  });
 };

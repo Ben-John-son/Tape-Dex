@@ -218,10 +218,6 @@ if (tape.TapeGenres != null)
         }
     }).Where(ft => ft.TapeId == tape.Id)
     .ToList(),
-
-
-
-
     }).Where(dbTapes => dbTapes.UserId == id).ToList());
 
   }
@@ -230,13 +226,16 @@ if (tape.TapeGenres != null)
 // [Authorize]
 public IActionResult DeleteTape(int id)
   {
-    var removedTape = _dbContext.tapes.SingleOrDefault(t => t.Id == id);
-    if (removedTape == null)
-    {
-      return BadRequest();
-    }
-    _dbContext.tapes.Remove(removedTape);
+   var tape = _dbContext.tapes
+        .Include(t => t.TapeGenres)
+        .SingleOrDefault(t => t.Id == id);
+
+    if (tape == null) return NotFound();
+
+    _dbContext.tapeGenres.RemoveRange(tape.TapeGenres);
+    _dbContext.tapes.Remove(tape);
     _dbContext.SaveChanges();
+
     return NoContent();
   }
 

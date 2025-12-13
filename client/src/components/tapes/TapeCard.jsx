@@ -66,19 +66,19 @@ export default function TapeCard({ tapeObj, tapeUser, onUpdate }) {
       setShowEdit(false);
     } catch (error) {
       console.error("Failed to update tape:", error);
-      alert("Failed to update tape. See console for details.");
+      alert("Failed to update tape.");
     }
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this tape?")) return;
+    if (!window.confirm("Delete this tape?")) return;
 
     try {
       await deleteTape(tapeObj.id);
       if (onUpdate) onUpdate(tapeObj.id);
     } catch (error) {
       console.error("Failed to delete tape:", error);
-      alert("Failed to delete tape. See console for details.");
+      alert("Failed to delete tape.");
     }
   };
 

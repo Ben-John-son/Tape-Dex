@@ -8,5 +8,8 @@ public class StudioDTO
 
   public string Country {get; set;}
 
+  public int? UserId {get;set;}
+  public UserProfileDTO? User {get;set;}
+
   public List<TapeDTO>? Tapes {get; set;}
 }

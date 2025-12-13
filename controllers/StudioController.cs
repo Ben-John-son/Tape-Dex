@@ -31,6 +31,7 @@ public IActionResult Get()
       Id = studio.Id,
       Name = studio.Name,
       Country = studio.Country,
+      UserId = studio.UserId,
       Tapes = studio.Tapes.Select((st) => new TapeDTO
       {
         Id = st.Id,
@@ -110,6 +111,47 @@ public IActionResult DeleteStudio(int id)
     return NoContent();
 
   }
+
+
+[HttpGet("studioBy/{id}")]
+[Authorize]
+public IActionResult GetUserStudios(int id)
+{
+    var studios = _dbContext.studios
+        .Where(s => s.UserId == id)
+        .Select(studio => new StudioDTO
+        {
+            Id = studio.Id,
+            Name = studio.Name,
+            Country = studio.Country,
+            UserId = studio.UserId
+        })
+        .ToList();
+
+    return Ok(studios);
+}
+
+
+
+[HttpGet("{id}")]
+// [Authorize]
+public IActionResult StudioById(int id)
+{
+    var studio = _dbContext.studios
+        .Where(s => s.Id == id)
+        .Select(studio => new StudioDTO
+        {
+            Id = studio.Id,
+            Name = studio.Name,
+            Country = studio.Country,
+            UserId = studio.UserId
+        })
+        .FirstOrDefault();
+
+    if (studio == null) return NotFound();
+
+    return Ok(studio);
+}
 
 
 }

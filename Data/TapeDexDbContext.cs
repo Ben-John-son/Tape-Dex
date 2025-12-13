@@ -182,12 +182,14 @@ public class TapeDexDbContext : IdentityDbContext<IdentityUser>
                 Id = 1,
                 Name = "Colombia",
                 Country = "United States",
+                UserId = 1
             },
             new Studio
             {
                 Id = 2,
                Name = "Warner Brothers",
-               Country = "United States"
+               Country = "United States",
+               UserId = 2
             }
         });
 
