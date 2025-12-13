@@ -22,7 +22,7 @@ public TapeController(TapeDexDbContext context)
   }
 
 [HttpGet]
-// [Authorize]
+[Authorize]
 
 public IActionResult Get()
   {
@@ -70,7 +70,7 @@ public IActionResult Get()
 
 
     [HttpGet("tapeBy/{id}")]
-    // [Authorize]
+    [Authorize]
     public IActionResult GetTapeById( int id)
   {
        return Ok(_dbContext.tapes.Include(t => t.Studio).Include(tu => tu.User).Include(tg => tg.TapeGenres).Select(tape => new TapeDTO
@@ -121,7 +121,7 @@ public IActionResult Get()
 
 
   [HttpPatch("{id}")]
-  // [Authorize]
+  [Authorize]
   public IActionResult UpdateTape(TapeDTO tape, int id)
   {
     
@@ -166,7 +166,7 @@ if (tape.TapeGenres != null)
 
 
   [HttpPost]
-  // [Authorize]
+  [Authorize]
   public IActionResult NewTape(Tape tape)
   {
     if (tape.Rating.HasValue)
@@ -218,25 +218,24 @@ if (tape.TapeGenres != null)
         }
     }).Where(ft => ft.TapeId == tape.Id)
     .ToList(),
-
-
-
-
     }).Where(dbTapes => dbTapes.UserId == id).ToList());
 
   }
 
 [HttpDelete("{id}")]
-// [Authorize]
+[Authorize]
 public IActionResult DeleteTape(int id)
   {
-    var removedTape = _dbContext.tapes.SingleOrDefault(t => t.Id == id);
-    if (removedTape == null)
-    {
-      return BadRequest();
-    }
-    _dbContext.tapes.Remove(removedTape);
+   var tape = _dbContext.tapes
+        .Include(t => t.TapeGenres)
+        .SingleOrDefault(t => t.Id == id);
+
+    if (tape == null) return NotFound();
+
+    _dbContext.tapeGenres.RemoveRange(tape.TapeGenres);
+    _dbContext.tapes.Remove(tape);
     _dbContext.SaveChanges();
+
     return NoContent();
   }
 

@@ -22,7 +22,7 @@ public GenreController(TapeDexDbContext context)
   }
 
 [HttpGet]
-// [Authorize]
+[Authorize]
 
 public IActionResult Get()
   {
@@ -56,7 +56,7 @@ public IActionResult Get()
   }
 
   [HttpPatch("{id}")]
-  // [Authorize]
+  [Authorize]
   public IActionResult UpdateGenre(GenreDTO genre, int id)
   {
     
@@ -72,21 +72,6 @@ public IActionResult Get()
     }
 
     genreToUpdate.Name = genre.Name;
-   
-    // if (genre.TapeGenres != null)
-    // {
-    //    genreToUpdate.TapeGenres = genre.TapeGenres
-    //         .Select(tg => new TapeGenre {
-    //             Id = tg.Id,
-    //             TapeId = id,
-    //             GenreId = tg.GenreId,
-    //             Tape = new Tape
-    //             {
-    //               Title = tg.Tape.Title
-    //             }
-    //         })
-    //         .ToList();
-    // }
 
     _dbContext.SaveChanges();
     return NoContent();
@@ -94,7 +79,7 @@ public IActionResult Get()
 
 
 [HttpPost]
-// [Authorize]
+[Authorize]
 public IActionResult CreateGenre(Genre genre)
   {
     

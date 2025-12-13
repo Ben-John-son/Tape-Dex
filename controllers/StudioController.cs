@@ -22,7 +22,7 @@ public StudioController(TapeDexDbContext context)
   }
 
 [HttpGet]
-// [Authorize]
+[Authorize]
 
 public IActionResult Get()
   {
@@ -31,6 +31,7 @@ public IActionResult Get()
       Id = studio.Id,
       Name = studio.Name,
       Country = studio.Country,
+      UserId = studio.UserId,
       Tapes = studio.Tapes.Select((st) => new TapeDTO
       {
         Id = st.Id,
@@ -58,7 +59,7 @@ public IActionResult Get()
 
 
 [HttpPost]
-// [Authorize]
+[Authorize]
 public IActionResult CreateStudio(Studio studio)
   {
     
@@ -70,7 +71,7 @@ public IActionResult CreateStudio(Studio studio)
 
 
   [HttpPatch("{id}")]
-  // [Authorize]
+  [Authorize]
   public IActionResult UpdateStudio(StudioDTO studio, int id)
   {
 
@@ -97,7 +98,7 @@ public IActionResult CreateStudio(Studio studio)
 
 
 [HttpDelete("{id}")]
-// [Authorize]
+[Authorize]
 public IActionResult DeleteStudio(int id)
   {
     var removedStudio = _dbContext.studios.SingleOrDefault(s => s.Id == id);
@@ -110,6 +111,47 @@ public IActionResult DeleteStudio(int id)
     return NoContent();
 
   }
+
+
+[HttpGet("studioBy/{id}")]
+[Authorize]
+public IActionResult GetUserStudios(int id)
+{
+    var studios = _dbContext.studios
+        .Where(s => s.UserId == id)
+        .Select(studio => new StudioDTO
+        {
+            Id = studio.Id,
+            Name = studio.Name,
+            Country = studio.Country,
+            UserId = studio.UserId
+        })
+        .ToList();
+
+    return Ok(studios);
+}
+
+
+
+[HttpGet("{id}")]
+[Authorize]
+public IActionResult StudioById(int id)
+{
+    var studio = _dbContext.studios
+        .Where(s => s.Id == id)
+        .Select(studio => new StudioDTO
+        {
+            Id = studio.Id,
+            Name = studio.Name,
+            Country = studio.Country,
+            UserId = studio.UserId
+        })
+        .FirstOrDefault();
+
+    if (studio == null) return NotFound();
+
+    return Ok(studio);
+}
 
 
 }
