@@ -1,40 +1,47 @@
 const url = "/api/tape";
 
-export const getTapes = () => {
-  return fetch(url).then((res) => res.json());
+
+const safeJson = async (res) => {
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(errorText || "Request failed");
+  }
+  if (res.status === 204) return null; 
+  return res.json();
 };
 
 
-export const getUserTapes = (id) => {
-  return fetch(`${url}/${id}`).then((res) => res.json());
-}
+export const getTapes = () =>
+   fetch(url).then(safeJson);
 
 
-export const getTapeById = (id) => {
-  return fetch(`${url}/tapeBy/${id}`).then((res) => res.json());
-}
+export const getUserTapes = (id) => 
+  fetch(`${url}/${id}`).then(safeJson);
+
+
+export const getTapeById = (id) => 
+  fetch(`${url}/tapeBy/${id}`).then(safeJson);
 
 export const updateTape = (id, tape) => {
   return fetch(`${url}/${id}`, {
     method: "PATCH",
     credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(tape),
-  });
-}
+  }).then(safeJson);
+};
 
 
 export const newTape = (tape) => {
-  fetch(url, {
+  return fetch(url, {
     method: "POST",
     credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(tape),
-  }).then((res) => res.json());
-}
+  }).then(safeJson);
+};
 
 
+export const deleteTape = (id) => {
+  return fetch(`${url}/${id}`, { method: "DELETE" }).then(safeJson);
+};
